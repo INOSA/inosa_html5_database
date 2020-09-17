@@ -4,7 +4,7 @@ renew='false'
 
 /opt/mssql/bin/sqlservr > /tmp/sql.log &
 
-while ! grep -m1 'The tempdb database has 8 data file(s).' < /tmp/sql.log; do
+while ! grep -m1 'The tempdb database has' < /tmp/sql.log; do
 	sleep 1
 done
 
