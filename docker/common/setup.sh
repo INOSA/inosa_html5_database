@@ -40,4 +40,19 @@ fi
 echo -e "\e[32mDatabase schema:\e[0m"
 /opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -S localhost -Q "SELECT loginname, dbname FROM syslogins"
 
+if [[ ! -f "/var/already-started" ]]; then
+if ls /start-scripts | grep -q .sql; then
+  for f in /start-scripts/*.sql
+  do
+    echo "processing: $f"
+    /opt/mssql-tools/bin/sqlcmd -S localhost -U $DB_USERNAME -P $DB_PASSWORD -i $f
+  done
+  touch /var/already-started
+else
+  echo "you can put sql scripts in /start-scripts"
+fi
+fi
+
+echo "DATABASE IS READY"
+
 wait
