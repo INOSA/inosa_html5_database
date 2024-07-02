@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/mssql/server:2019-CU19-ubuntu-18.04
+FROM mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04
 USER root
 RUN mkdir /opt/docker && mkdir /start-scripts && chown mssql /var
 COPY docker/common /opt/docker/common
