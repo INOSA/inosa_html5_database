@@ -20,7 +20,7 @@ pipeline {
                     }
 
                     env.IMAGE_FULL_TAG = "${REPONAME}:${DOCKER_TAG}"
-                    env.AWS_TAG = "143396475653.dkr.ecr.eu-central-1.amazonaws.com/${IMAGE_FULL_TAG}"
+                    env.AWS_TAG = "public.ecr.aws/s6z8v3g0/${IMAGE_FULL_TAG}"
                     env.AZURE_REPOSITORY_IMAGE_TAG = "${AZURE_REPOSITORY_URL}/${IMAGE_FULL_TAG}"
                 }
             }
