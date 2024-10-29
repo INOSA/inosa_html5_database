@@ -2,12 +2,6 @@
 #define params
 renew='false'
 
-/opt/mssql/bin/sqlservr > /tmp/sql.log &
-
-while ! grep -m1 'The tempdb database has 8 data file(s).' < /tmp/sql.log; do
-	sleep 1
-done
-
 # parse arguments
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -29,16 +23,28 @@ if [ "${renew}" == "true" ]; then
     echo -e "\e[33m========================================\e[0m"
     echo -e "\e[33m= Resetting database and user settings =\e[0m"
     echo -e "\e[33m========================================\e[0m"
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/db-renew.sql
+    /opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/db-renew.sql
 fi
 
 # create db and user
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/db-create.sql
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/db-login.sql
+/opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/db-create.sql
+/opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/db-login.sql
+
+# pull before build
+if [ "${renew}" == "true" ]; then
+    echo -e "\e[33m========================================\e[0m"
+    echo -e "\e[33m= Resetting database and user settings =\e[0m"
+    echo -e "\e[33m========================================\e[0m"
+    /opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/public-api-db-renew.sql
+fi
+
+# create db and user
+/opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/public-api-db-create.sql
+/opt/mssql-tools/bin/sqlcmd -C -S localhost -U sa -P $SA_PASSWORD -i /opt/docker/common/public-api-db-login.sql
 
 ## confirm that db and user exists
 echo -e "\e[32mDatabase schema:\e[0m"
-/opt/mssql-tools/bin/sqlcmd -U sa -P $SA_PASSWORD -S localhost -Q "SELECT loginname, dbname FROM syslogins"
+/opt/mssql-tools/bin/sqlcmd -C -U sa -P $SA_PASSWORD -S localhost -Q "SELECT loginname, dbname FROM syslogins"
 
 if [[ ! -f "/var/already-started" ]]; then
 if ls /start-scripts | grep -q .sql; then

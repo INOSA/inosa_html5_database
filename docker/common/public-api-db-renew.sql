@@ -1,0 +1,10 @@
+IF EXISTS(SELECT loginname FROM syslogins WHERE loginname = '$(DB_USERNAME)')
+  BEGIN
+    USE [$(PUBLIC_API_DB_NAME)];
+    DROP LOGIN [$(DB_USERNAME)];
+    DROP USER [$(DB_USERNAME)];
+    USE [master];
+  END
+
+IF EXISTS (SELECT NAME FROM sys.databases WHERE name = '$(PUBLIC_API_DB_NAME)')
+    DROP DATABASE [$(PUBLIC_API_DB_NAME)];
