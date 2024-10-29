@@ -1,9 +1,17 @@
-FROM mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
 USER root
-RUN mkdir /opt/docker && mkdir /start-scripts && chown mssql /var
+
+RUN apt-get -y upgrade  && apt-get -y update  && apt-get -y install vim dos2unix unzip
+
+RUN mkdir /root/sqlpackage && \
+    wget https://aka.ms/sqlpackage-linux -O /tmp/sqlpackage.zip && \
+    unzip /tmp/sqlpackage.zip -d /root/sqlpackage && \
+    chmod a+x /root/sqlpackage/sqlpackage
+RUN mv /opt/mssql-tools18 /opt/mssql-tools/
+
+RUN mkdir /opt/docker
 COPY docker/common /opt/docker/common
+RUN find /opt/docker/common -name "*.sh" | xargs dos2unix
 RUN find /opt/docker/common -name "*.sh" | xargs chmod +x
 EXPOSE 1433
-USER mssql
-CMD /opt/docker/common/setup.sh --renew
-
